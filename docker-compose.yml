@@ -19,6 +19,22 @@ networks:
   edgex-network:
     driver: bridge
 services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    command: "/usr/sbin/mosquitto -c /mosquitto-no-auth.conf"
+    ports:
+      - 127.0.0.1:1883:1883/tcp
+      - 127.0.0.1:8000:8000/tcp
+    container_name: edgex-mqtt-broker
+    hostname: edgex-mqtt-broker
+    read_only: true
+    networks:
+      - edgex-network
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto-no-auth.conf
+    security_opt:
+      - no-new-privileges:true
+    user: 2002:2001
   app-service-rules:
     container_name: edgex-app-rules-engine
     depends_on:
@@ -67,8 +83,8 @@ services:
       SERVICE_HOST: edgex-app-mqtt
       TRIGGER_EDGEXMESSAGEBUS_PUBLISHHOST_HOST: edgex-redis
       TRIGGER_EDGEXMESSAGEBUS_SUBSCRIBEHOST_HOST: edgex-redis
-      WRITABLE_PIPELINE_FUNCTIONS_MQTTEXPORT_PARAMETERS_BROKERADDRESS: tcp://broker.mqttdashboard.com:1883
-      WRITABLE_PIPELINE_FUNCTIONS_MQTTEXPORT_PARAMETERS_TOPIC: mytopic123
+      WRITABLE_PIPELINE_FUNCTIONS_MQTTEXPORT_PARAMETERS_BROKERADDRESS: tcp://edgex-mqtt-broker:1883
+      WRITABLE_PIPELINE_FUNCTIONS_MQTTEXPORT_PARAMETERS_TOPIC: /home/laptop
     hostname: edgex-app-mqtt
     image: edgexfoundry/app-service-configurable:2.0.0
     networks:
