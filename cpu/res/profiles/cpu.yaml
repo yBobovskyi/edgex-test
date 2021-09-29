@@ -1,0 +1,66 @@
+name: "cpu"
+manufacturer: "Intel Corp."
+model: "Some 3rd party App sending int & floats"
+labels:
+ - "rest"
+ - "float64"
+ - "uint64"
+description: "REST Device that sends in CPU temperature and utilization"
+
+deviceResources:
+  - name: core0temp
+    isHidden: true
+    description: "float64 values"
+    properties:
+      valueType: "float64"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core1temp
+    isHidden: true
+    description: "float64 values"
+    properties:
+      valueType: "float64"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core2temp
+    isHidden: true
+    description: "float64 values"
+    properties:
+      valueType: "float64"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core3temp
+    isHidden: true
+    description: "float64 values"
+    properties:
+      valueType: "float64"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core0util
+    isHidden: true
+    description: "uint64 value"
+    properties:
+      valueType: "uint64array"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core1util
+    isHidden: true
+    description: "uint64 value"
+    properties:
+      valueType: "uint64array"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core2util
+    isHidden: true
+    description: "uint64 value"
+    properties:
+      valueType: "uint64array"
+      readWrite: "W"
+      mediaType: "text/plain"
+  - name: core3util
+    isHidden: true
+    description: "uint64 value"
+    properties:
+      valueType: "uint64array"
+      readWrite: "W"
+      mediaType: "text/plain"

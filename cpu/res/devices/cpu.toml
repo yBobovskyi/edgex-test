@@ -1,0 +1,7 @@
+[[DeviceList]]
+  Name = "cpu"
+  ProfileName = "cpu"
+  Description = "RESTful Device that sends in CPU temperatures and utilization"
+  Labels = [ "rest", "numeric", "float", "int" ]
+  [DeviceList.Protocols]
+    [DeviceList.Protocols.other]
