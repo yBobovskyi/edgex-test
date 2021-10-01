@@ -19,22 +19,6 @@ networks:
   edgex-network:
     driver: bridge
 services:
-  mqtt-broker:
-    image: eclipse-mosquitto:latest
-    command: "/usr/sbin/mosquitto -c /mosquitto-no-auth.conf"
-    ports:
-      - 127.0.0.1:1883:1883/tcp
-      - 127.0.0.1:8000:8000/tcp
-    container_name: edgex-mqtt-broker
-    hostname: edgex-mqtt-broker
-    read_only: true
-    networks:
-      - edgex-network
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto-no-auth.conf
-    security_opt:
-      - no-new-privileges:true
-    user: 2002:2001
   app-service-rules:
     container_name: edgex-app-rules-engine
     depends_on:
@@ -59,7 +43,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59701:59701/tcp
+    - 59701:59701/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -90,7 +74,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59702:59702/tcp
+    - 59702:59702/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -117,7 +101,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59882:59882/tcp
+    - 59882:59882/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -129,7 +113,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:8500:8500/tcp
+    - 8500:8500/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -159,8 +143,8 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:5563:5563/tcp
-    - 127.0.0.1:59880:59880/tcp
+    - 5563:5563/tcp
+    - 59880:59880/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -182,7 +166,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:6379:6379/tcp
+    - 6379:6379/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -213,7 +197,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59986:59986/tcp
+    - 59986:59986/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -241,10 +225,26 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59881:59881/tcp
+    - 59881:59881/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
+    user: 2002:2001
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    command: "/usr/sbin/mosquitto -c /mosquitto-no-auth.conf"
+    ports:
+      - 1883:1883/tcp
+      - 8000:8000/tcp
+    container_name: edgex-mqtt-broker
+    hostname: edgex-mqtt-broker
+    read_only: true
+    networks:
+      - edgex-network
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto-no-auth.conf
+    security_opt:
+      - no-new-privileges:true
     user: 2002:2001
   notifications:
     container_name: edgex-support-notifications
@@ -267,7 +267,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59860:59860/tcp
+    - 59860:59860/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -289,7 +289,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59720:59720/tcp
+    - 59720:59720/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -319,7 +319,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:59861:59861/tcp
+    - 59861:59861/tcp
     read_only: true
     security_opt:
     - no-new-privileges:true
@@ -351,7 +351,7 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 127.0.0.1:58890:58890/tcp
+    - 58890:58890/tcp
     read_only: true
     security_opt:
     - label:disable
