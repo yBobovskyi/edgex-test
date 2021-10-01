@@ -2,7 +2,7 @@ from cpu import *
 import time
 import requests
 
-resource_endpoint = 'http://localhost:59986/api/v2/resource/cpu/'
+resource_endpoint = 'http://192.168.0.104:59986/api/v2/resource/cpu/'
 
 while True:
     cpu_temps = get_cpu_temps()
