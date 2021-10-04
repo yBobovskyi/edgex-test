@@ -197,10 +197,23 @@ services:
     networks:
       edgex-network: {}
     ports:
-    - 59986:59986/tcp
+      - 59986:59986/tcp
     read_only: true
     security_opt:
-    - no-new-privileges:true
+      - no-new-privileges:true
+    user: 2002:2001
+  flask:
+    container_name: edgex-flask
+    depends_on:
+      - redis
+    hostname: edgex-flask
+    build: ./flask/
+    networks:
+      edgex-network: {}
+    ports:
+      - 5000:5000
+    volumes:
+      - ./flask/app/:/app/
     user: 2002:2001
   metadata:
     container_name: edgex-core-metadata
@@ -246,6 +259,17 @@ services:
     security_opt:
       - no-new-privileges:true
     user: 2002:2001
+  mqtt-redis-parser:
+    build: ./mqtt_redis_parser
+    container_name: mqtt-redis-parser
+    depends_on:
+      - mqtt-broker
+      - redis
+    networks:
+      edgex-network: {}
+    volumes:
+      - ./mqtt_redis_parser/app/:/app/
+    user: 2002:2001
   notifications:
     container_name: edgex-support-notifications
     depends_on:
@@ -272,6 +296,15 @@ services:
     security_opt:
     - no-new-privileges:true
     user: 2002:2001
+  redis:
+    container_name: redis
+    hostname: redis
+    command: "redis-server --port 6380"
+    image: redis:alpine
+    networks:
+      edgex-network: {}
+    ports:
+      - 6380:6380/tcp
   rulesengine:
     container_name: edgex-kuiper
     depends_on:
@@ -366,4 +399,3 @@ volumes:
   db-data: {}
   kuiper-data: {}
   
-
