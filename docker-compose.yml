@@ -19,6 +19,9 @@ networks:
   edgex-network:
     driver: bridge
 services:
+#
+# ********* EdgeX services **********************
+#
   app-service-rules:
     container_name: edgex-app-rules-engine
     depends_on:
@@ -202,19 +205,6 @@ services:
     security_opt:
       - no-new-privileges:true
     user: 2002:2001
-  flask:
-    container_name: edgex-flask
-    depends_on:
-      - redis
-    hostname: edgex-flask
-    build: ./flask/
-    networks:
-      edgex-network: {}
-    ports:
-      - 5000:5000
-    volumes:
-      - ./flask/app/:/app/
-    user: 2002:2001
   metadata:
     container_name: edgex-core-metadata
     depends_on:
@@ -243,33 +233,6 @@ services:
     security_opt:
     - no-new-privileges:true
     user: 2002:2001
-  mqtt-broker:
-    image: eclipse-mosquitto:latest
-    command: "/usr/sbin/mosquitto -c /mosquitto-no-auth.conf"
-    ports:
-      - 1883:1883/tcp
-      - 8000:8000/tcp
-    container_name: edgex-mqtt-broker
-    hostname: edgex-mqtt-broker
-    read_only: true
-    networks:
-      - edgex-network
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto-no-auth.conf
-    security_opt:
-      - no-new-privileges:true
-    user: 2002:2001
-  mqtt-redis-parser:
-    build: ./mqtt_redis_parser
-    container_name: mqtt-redis-parser
-    depends_on:
-      - mqtt-broker
-      - redis
-    networks:
-      edgex-network: {}
-    volumes:
-      - ./mqtt_redis_parser/app/:/app/
-    user: 2002:2001
   notifications:
     container_name: edgex-support-notifications
     depends_on:
@@ -296,15 +259,6 @@ services:
     security_opt:
     - no-new-privileges:true
     user: 2002:2001
-  redis:
-    container_name: redis
-    hostname: redis
-    command: "redis-server --port 6380"
-    image: redis:alpine
-    networks:
-      edgex-network: {}
-    ports:
-      - 6380:6380/tcp
   rulesengine:
     container_name: edgex-kuiper
     depends_on:
@@ -392,6 +346,73 @@ services:
     user: root:root
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock:z
+#
+# ************************************************
+#
+
+#
+# ********* Cloud services **********************
+#
+  flask:
+    container_name: edgex-flask
+    depends_on:
+      - redis
+    hostname: edgex-flask
+    build: ./flask/
+    networks:
+      edgex-network: {}
+    ports:
+      - 5000:5000
+    volumes:
+      - ./flask/app/:/app/
+    user: 2002:2001
+  mqtt-redis-parser:
+    build: ./mqtt_redis_parser
+    container_name: mqtt-redis-parser
+    depends_on:
+      - mqtt-broker
+      - redis
+    networks:
+      edgex-network: {}
+    volumes:
+      - ./mqtt_redis_parser/app/:/app/
+    user: 2002:2001
+  redis:
+    container_name: redis
+    hostname: redis
+    command: "redis-server --port 6380"
+    image: redis:alpine
+    networks:
+      edgex-network: {}
+    ports:
+      - 6380:6380/tcp
+#
+# ************************************************
+#
+
+#
+# ********* MQTT Broker **********************
+#
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    command: "/usr/sbin/mosquitto -c /mosquitto-no-auth.conf"
+    ports:
+      - 1883:1883/tcp
+      - 8000:8000/tcp
+    container_name: edgex-mqtt-broker
+    hostname: edgex-mqtt-broker
+    read_only: true
+    networks:
+      - edgex-network
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto-no-auth.conf
+    security_opt:
+      - no-new-privileges:true
+    user: 2002:2001
+#
+# ************************************************
+#
+
 version: '3.7'
 volumes:
   consul-config: {}
