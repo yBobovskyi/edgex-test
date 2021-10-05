@@ -18,7 +18,8 @@ def cpu_records():
             temps[i].append(json.loads(r.lindex(source, j)))
     lock.release()
 
-    for i in range(len(temps[0])):
+    lengths = [len(temps[i]) for i in range(4)]
+    for i in range(min(lengths)):
         out_str += '<tr><td></td>'
         for j in range(len(temps)):
             out_str += '<td style="text-align:center">' + str(temps[j][i]['value']) + '</td><td style="text-align:center">' + temps[j][i]['origin'] + '</td>'

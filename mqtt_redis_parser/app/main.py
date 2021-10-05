@@ -39,7 +39,8 @@ current_record = {}
 
 def on_message(client, userdata, msg):
     current_record = parse_json(msg.payload.decode())
-    write_record(current_record)
+    if current_record['device'] == 'cpu':
+        write_record(current_record)
 
 client = mqtt.Client(client_id)
 client.on_connect = on_connect

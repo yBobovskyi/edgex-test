@@ -1,0 +1,29 @@
+name: "switch"
+manufacturer: "Some Factory"
+model: "Dummy"
+labels:
+- "Switch"
+description: "Dummy switch"
+
+deviceResources:
+-
+  name: "state"
+  isHidden: false
+  description: "On/Off , 0-OFF 1-ON"
+  attributes:
+    { primaryTable: "COILS", startingAddress: 0 }
+  properties:
+    valueType: "Bool"
+    readWrite: "RW"
+    scale: "1"
+    minimum: "0"
+    maximum: "1"
+    defaultValue: "1"
+
+deviceCommands:
+-
+  name: "switch"
+  readWrite: "RW"
+  isHidden: false
+  resourceOperations:
+    - { deviceResource: "state", mappings: {"true":"ON","false":"OFF"} }

@@ -205,6 +205,34 @@ services:
     security_opt:
       - no-new-privileges:true
     user: 2002:2001
+  device-switch:
+    container_name: edgex-device-switch
+    depends_on:
+    - consul
+    - data
+    - metadata
+    environment:
+      CLIENTS_CORE_COMMAND_HOST: edgex-core-command
+      CLIENTS_CORE_DATA_HOST: edgex-core-data
+      CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
+      CLIENTS_SUPPORT_NOTIFICATIONS_HOST: edgex-support-notifications
+      CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
+      DATABASES_PRIMARY_HOST: edgex-redis
+      EDGEX_SECURITY_SECRET_STORE: "false"
+      MESSAGEQUEUE_HOST: edgex-redis
+      REGISTRY_HOST: edgex-core-consul
+      SERVICE_HOST: edgex-device-switch
+      DEVICE_DEVICESDIR: /res/devices/
+      DEVICE_PROFILESDIR: /res/profiles/
+    hostname: edgex-device-switch
+    image: edgexfoundry/device-modbus-arm64:2.0.0
+    volumes:
+      - ./switch/res:/res
+    networks:
+      edgex-network: {}
+    ports:
+      - 59901:59901/tcp
+    user: 2002:2001
   metadata:
     container_name: edgex-core-metadata
     depends_on:
@@ -409,6 +437,26 @@ services:
     security_opt:
       - no-new-privileges:true
     user: 2002:2001
+#
+# ************************************************
+#
+
+#
+# *********  Switch Simulator **********************
+#
+
+  switch-mock:
+    container_name: edgex-switch-mock
+    hostname: edgex-switch
+    build: ./switch
+    volumes:
+      - ./switch:/switch
+    networks:
+      edgex-network: {}
+    ports:
+    - 1502:1502/tcp
+    user: 2002:2001
+
 #
 # ************************************************
 #

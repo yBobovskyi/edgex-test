@@ -1,0 +1,16 @@
+[[DeviceList]]
+  Name = "switch"
+  ProfileName = "switch"
+  Description = "Dummy switch"
+  labels = [ "switch","modbus TCP" ]
+  [DeviceList.Protocols]
+    [DeviceList.Protocols.modbus-tcp]
+       Address = "edgex-switch"
+       Port = "1502"
+       UnitID = "1"
+       Timeout = "5"
+       IdleTimeout = "5"
+  [[DeviceList.AutoEvents]]
+    Interval = "20s"
+    OnChange = false
+    SourceName = "state"
