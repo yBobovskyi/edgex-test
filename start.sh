@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+chmod 0666 switch/state
+
 docker-compose up -d device-cpu
 docker-compose up -d mqtt-broker
 docker-compose up -d app-service-mqtt
