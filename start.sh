@@ -32,6 +32,14 @@ curl -X POST \
       }
     },
     {
+      "rest": {
+        "url": "http://edgex-support-notifications:59860/api/v2/notification",
+        "method": "post",
+        "dataTemplate": "[ {\"apiVersion\":\"v2\", \"notification\": { \"category\": \"temperature\", \"content\": \"Core 0 temperature went above 100 degrees. Switching off...\", \"contentType\": \"string\", \"sender\":\"support-notification\", \"severity\": \"CRITICAL\" } } ]",
+        "sendSingle": true
+      }
+    },
+    {
       "log":{}
     }
   ]
