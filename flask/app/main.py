@@ -75,7 +75,7 @@ def show_notifications():
     out_str = '<meta http-equiv="refresh" content="5">'
     out_str += '<table border="1"><tr><th>Time</th><th>Message</th></tr>'
     r = redis.Redis(host = 'redis', port = 6380, db = 2)
-    with r.lock('notificaiton_redis'):
+    with r.lock('notification_redis'):
         for i in range(r.llen('notifications')):
             record = json.loads(r.lindex('notifications', i))
             out_str += '<tr><td>' + record['time']  + '</td><td>' + record['message'] + '</td></tr>'
