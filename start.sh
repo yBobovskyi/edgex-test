@@ -14,6 +14,10 @@ docker-compose up -d switch-mock
 docker-compose up -d device-switch
 
 curl -X POST \
+  http://localhost:59860/api/v2/subscription \
+  -d '[ { "apiVersion": "v2", "subscription": { "name": "subscriptionA", "channels": [ { "type": "REST", "host": "edgex-flask", "port": 5000, "path": "/notifications/data", "httpMethod": "POST" } ], "categories": [ "temperature" ], "receiver": "receiverA", "adminState": "UNLOCKED" } } ]'
+
+curl -X POST \
   http://localhost:59720/streams \
   -H 'Content-Type: application/json' \
   -d '{"sql": "create stream demo() WITH (FORMAT=\"JSON\", TYPE=\"edgex\")"}'

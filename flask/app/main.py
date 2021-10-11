@@ -5,7 +5,6 @@ from datetime import datetime
 import requests
 
 app = Flask(__name__)
-requests.post('http://edgex-support-notifications:59860/api/v2/subscription', data = '[ { "apiVersion": "v2", "subscription": { "name": "subscriptionA", "channels": [ { "type": "REST", "host": "edgex-flask", "port": 5000, "path": "/notifications/data", "httpMethod": "POST" } ], "categories": [ "temperature" ], "receiver": "receiverA", "adminState": "UNLOCKED" } } ]')
 
 def cpu_records():
     r = redis.Redis(host = 'redis', port = 6380, db = 1)
