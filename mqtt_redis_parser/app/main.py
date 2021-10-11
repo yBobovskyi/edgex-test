@@ -28,12 +28,10 @@ def parse_json(json_str):
 
 def write_record(record):
     r = redis.Redis(host = 'redis', port = 6380, db = 1)
-    lock = r.lock('cpu_redis')
-    lock.acquire(blocking = True)
-    r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
-    if r.llen(record['source']) > 20:
-        r.rpop(record['source'])
-    lock.release()
+    with r.lock('cpu_redis'):
+        r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
+        if r.llen(record['source']) > 20:
+            r.rpop(record['source'])
 
 current_record = {}
 

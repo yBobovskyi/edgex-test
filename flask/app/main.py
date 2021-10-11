@@ -11,14 +11,12 @@ def cpu_records():
     r = redis.Redis(host = 'redis', port = 6380, db = 1)
     out_str = '<table border="1"><tr><th style="width:100px">CPU</th><th>Core 0</th><th style="width:250px">Time</th><th>Core 1</th><th style="width:250px">Time</th><th>Core 2</th><th style="width:250px">Time</th><th>Core 3</th><th style="width:250px">Time</th></tr>'
     temps = []
-    lock = r.lock('cpu_redis')
-    lock.acquire(blocking = True)
-    for i in range(4):
-        temps.append([])
-        source = 'core' + str(i) + 'temp'
-        for j in range(r.llen(source)):
-            temps[i].append(json.loads(r.lindex(source, j)))
-    lock.release()
+    with r.lock('cpu_redis'):
+        for i in range(4):
+            temps.append([])
+            source = 'core' + str(i) + 'temp'
+            for j in range(r.llen(source)):
+                temps[i].append(json.loads(r.lindex(source, j)))
 
     lengths = [len(temps[i]) for i in range(4)]
     for i in range(min(lengths)):
@@ -46,12 +44,10 @@ def show_records():
 
 def write_record(record):
     r = redis.Redis(host = 'redis', port = 6380, db = 1)
-    lock = r.lock('cpu_redis')
-    lock.acquire(blocking = True)
-    r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
-    if r.llen(record['source']) > 20:
-        r.rpop(record['source'])
-    lock.release()
+    with r.lock('cpu_redis'):
+        r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
+        if r.llen(record['source']) > 20:
+            r.rpop(record['source'])
 
 @app.route('/data', methods = ['POST'])
 def gather_data():
@@ -71,7 +67,8 @@ def gather_notification():
     msg = request.get_data(as_text=True)
     time = datetime.now()
     r = redis.Redis(host = 'redis', port = 6380, db = 2)
-    r.lpush('notifications', json.dumps({ 'time' : time.strftime("%Y-%m-%d %H:%M:%S"), 'message' : msg }))
+    with r.lock('notification_redis'):
+        r.lpush('notifications', json.dumps({ 'time' : time.strftime("%Y-%m-%d %H:%M:%S"), 'message' : msg }))
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
 @app.route('/notifications')
@@ -79,8 +76,9 @@ def show_notifications():
     out_str = '<meta http-equiv="refresh" content="5">'
     out_str += '<table border="1"><tr><th>Time</th><th>Message</th></tr>'
     r = redis.Redis(host = 'redis', port = 6380, db = 2)
-    for i in range(r.llen('notifications')):
-        record = json.loads(r.lindex('notifications', i))
-        out_str += '<tr><td>' + record['time']  + '</td><td>' + record['message'] + '</td></tr>'
+    with r.lock('notificaiton_redis'):
+        for i in range(r.llen('notifications')):
+            record = json.loads(r.lindex('notifications', i))
+            out_str += '<tr><td>' + record['time']  + '</td><td>' + record['message'] + '</td></tr>'
     out_str += '</table></meta>'
     return out_str
