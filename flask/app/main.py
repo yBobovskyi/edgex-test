@@ -2,12 +2,14 @@ import redis
 import json
 from flask import Flask, request
 from datetime import datetime
-import requests
+
+redis_hostname = 'localhost'
+redis_port = 6379
 
 app = Flask(__name__)
 
 def cpu_records():
-    r = redis.Redis(host = 'redis', port = 6380, db = 1)
+    r = redis.Redis(host = redis_hostname, port = redis_port, db = 1)
     out_str = '<table border="1"><tr><th style="width:100px">CPU</th><th>Core 0</th><th style="width:250px">Time</th><th>Core 1</th><th style="width:250px">Time</th><th>Core 2</th><th style="width:250px">Time</th><th>Core 3</th><th style="width:250px">Time</th></tr>'
     temps = []
     with r.lock('cpu_redis'):
@@ -42,7 +44,7 @@ def show_records():
     return str
 
 def write_record(record):
-    r = redis.Redis(host = 'redis', port = 6380, db = 1)
+    r = redis.Redis(host = redis_hostname, port = redis_port, db = 1)
     with r.lock('cpu_redis'):
         r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
         if r.llen(record['source']) > 20:
@@ -65,7 +67,7 @@ def gather_data():
 def gather_notification():
     msg = request.get_data(as_text=True)
     time = datetime.now()
-    r = redis.Redis(host = 'redis', port = 6380, db = 2)
+    r = redis.Redis(host = redis_hostname, port = redis_port, db = 2)
     with r.lock('notification_redis'):
         r.lpush('notifications', json.dumps({ 'time' : time.strftime("%Y-%m-%d %H:%M:%S"), 'message' : msg }))
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
@@ -74,7 +76,7 @@ def gather_notification():
 def show_notifications():
     out_str = '<meta http-equiv="refresh" content="5">'
     out_str += '<table border="1"><tr><th>Time</th><th>Message</th></tr>'
-    r = redis.Redis(host = 'redis', port = 6380, db = 2)
+    r = redis.Redis(host = redis_hostname, port = redis_port, db = 2)
     with r.lock('notification_redis'):
         for i in range(r.llen('notifications')):
             record = json.loads(r.lindex('notifications', i))

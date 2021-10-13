@@ -9,9 +9,12 @@ port = 1883
 topic = '/home/laptop'
 client_id = f'python-mqtt-{random.randint(0, 1000)}'
 
+redis_hostname = 'localhost'
+redis_port = 6379
+
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print('Connected to MQTT broker\n');
+        print('Connected to MQTT broker\n')
     else:
         print('Failed to connect to MQTT broker, return code %d\n', rc)
 
@@ -27,7 +30,7 @@ def parse_json(json_str):
     return record
 
 def write_record(record):
-    r = redis.Redis(host = 'redis', port = 6380, db = 1)
+    r = redis.Redis(host = redis_hostname, port = redis_port, db = 1)
     with r.lock('cpu_redis'):
         r.lpush(record['source'], json.dumps({ 'origin' : record['origin'].strftime("%Y-%m-%d %H:%M:%S"), 'value' : float(record['value']) }))
         if r.llen(record['source']) > 20:
